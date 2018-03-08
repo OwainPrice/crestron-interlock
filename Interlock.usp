@@ -1,0 +1,82 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+  (Fill in comments below)
+*******************************************************************************************/
+/*
+Dealer Name: 
+System Name: Interlock
+System Number:
+Programmer: Owain Price
+Comments:*
+/
+
+/*******************************************************************************************
+  Compiler Directives
+  (Uncomment and declare compiler directives as needed)
+*******************************************************************************************/
+#DEFINE_CONSTANT maxIN 50
+#PRINT_TO_TRACE
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+
+#HELP_BEGIN
+   This module emulates the interlock symbol within Simpl Windows.
+#HELP_END
+
+DIGITAL_INPUT Clear, Inputs[maxIN]; 
+DIGITAL_OUTPUT Outputs[maxIN];
+
+INTEGER definedIN;
+
+PUSH Inputs
+{
+	integer i, x;
+
+	x = GetLastModifiedArrayIndex();
+
+	for(i=1 to definedIN)
+	{
+		if(i=x)
+		{
+			Outputs[i] = 1;
+		}
+		else
+		{
+			Outputs[i] = 0;
+		}
+	}
+}
+
+PUSH Clear
+{
+	integer i;
+
+	for(i=1 to definedIN)
+	{
+		Outputs[i] = 0;
+	}
+}
+
+/*******************************************************************************************
+  Main()
+  Uncomment and place one-time startup code here
+  (This code will get called when the system starts up)
+*******************************************************************************************/
+
+Function Main()
+{
+	integer i;
+
+	for(i=1 to maxIN)
+	{
+		If(IsSignalDefined(Inputs[i]))
+		{
+  			definedIN = i;
+		}
+		else
+		 break;
+	}	
+    WaitForInitializationComplete();
+}
+
